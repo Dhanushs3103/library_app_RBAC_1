@@ -26,7 +26,8 @@ let bookSchema = mongoose.Schema({
     },
     authorId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Users"
+        ref:"Users",
+        required:true
     }
 },{
     versionKey:false
