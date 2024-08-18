@@ -30,7 +30,8 @@ let userSchema = new mongoose.Schema({
     },
     booksCreated: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Books"
+        ref: "Books",
+        required:true
     }]
 },{
     versionKey:false

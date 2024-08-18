@@ -18,7 +18,6 @@ let bookSchema = mongoose.Schema({
     createdOn:{
         type:Date,
         default:Date.now,
-        required:true
     },
     pages:{
         type:Number,
@@ -28,6 +27,10 @@ let bookSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Users",
         required:true
+    },
+    updatedAt:{
+        type:Date,
+        default:Date.now,
     }
 },{
     versionKey:false
