@@ -84,35 +84,29 @@ booksRouter.get("/view-all-books",[authenticate,authorize(["creator","viewer","v
 })
 
 //Endpoint to update the books details [put request]
-booksRouter.put("/update-book/:id",[authenticate,authorize(["creator"])],async (req,res)=>{
+booksRouter.put("/update-book/:_id",[authenticate,authorize(["creator"])],async (req,res)=>{
   try {
-    //destructuring the creator id from the middleware
-    let {_id} = req.body
-    // finding the creator with his id
-    // let creator = await 
     //destructuring the id from req.params
-    let {id} = req.params
+    let {_id} = req.params
     //destructuring the newData from req.body
     let {title,genre,pages} = req.body;
     //checking if the provided id is a valid mongoDB id or not,
     if(!mongoose.Types.ObjectId.isValid(id)){
-      console.log(3);
-      return res.status(400).json({message:"Id is not a valid id"})
+      return res.status(400).json({message:"Id is not a valid mongoDB id"})
     }
     //checking if their is any book present with this Id
-    let book = await BookModel.findById(id);
-    if(!book) return res.status(404).json({message:"Book with the provided id doesn't exits"})
-    //updating the book
-    // let newBook = await BookModel({
-    //   title,
-    //   genre,
-    //   pages,
-
-      
-    // })
-    //if exits -
-    // let newBookDetails = await BookModel.findByIdAndUpdate({_id:id},)
-    res.status(200).json({message:"ok working"})
+    let book = await BookModel.findById(_id);
+    if(!book){
+     return res.status(404).json({message:"Book with the provided id doesn't exits"})
+    }
+    //If exists - updating the book details
+    book.title = title;
+    book.genre = genre;
+    book.pages = pages;
+    //saving the book with new details
+    await book.save()
+    // sending successful response
+    res.status(200).json({message:`Book with id ${id.toString()} successfully updated`})
   } catch (error) {
     console.log(2);
     console.log(error)
@@ -121,26 +115,47 @@ booksRouter.put("/update-book/:id",[authenticate,authorize(["creator"])],async (
 })
 
 //Endpoint to update the books details [patch request]
-booksRouter.patch("/update-book/:id",[authenticate,authorize(["creator"])],async (req,res)=>{
-  try {
-    //destructuring the id from req.params
-    //destructuring the data from req.body
-    //checking if book with id provided exits or not
-    //updating the new data 
-    //Sending response
-  } catch (error) {
-    res.status(500).json({message:error})
-  }
-})
+// booksRouter.patch("/update-book/:_id",[authenticate,authorize(["creator"])],async (req,res)=>{
+//   try {
+//     //getting the _id from the params
+//     let _id = req.params._id
+//     let newData = req.body
+//     //checking if the provided id is a valid mongoDB id or not,
+//     if(!mongoose.Types.ObjectId.isValid(_id)){
+//       return res.status(400).json({message:"Id is not a valid mongoDB id"})
+//     }
+//     // checking if there is any book with this _id
+//     let book = await BookModel.findById({_id});
+//     if(!book) {
+//       return res.status(404).json({message:"Book with this id doesn't exits"})
+//     }
+//     //updating the book
+//     await BookModel.findByIdAndUpdate(_id,newData)
+//     res.status(200).json({message:`Book with id ${_id.toString()} successfully updated`})
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({message:error})
+//   }
+// })
 
 //Endpoint to delete the books
-booksRouter.delete("/delete-book/:id",[authenticate,authorize(["creator"])],async (req,res)=>{
+booksRouter.delete("/delete-book/:_id",[authenticate,authorize(["creator"])],async (req,res)=>{
   try {
     //destructuring the id from req.params
-    //destructuring the data from req.body
-    //checking if book with id provided exits or not
+    let {_id} = req.params
+    //checking if the provided id is a valid mongoDB id or not,
+    if(!mongoose.Types.ObjectId.isValid(_id)){
+      return res.status(400).json({message:"Id is not a valid mongoDB id"})
+    }
+    // checking if there is any book with this _id
+    let book = await BookModel.findById({_id});
+    if(!book) {
+      return res.status(404).json({message:"Book with this id doesn't exits"})
+    }
     //deleting the book
+    await BookModel.findByIdAndDelete(_id)
     //Sending response
+    res.status(200).json({message:`Book with id ${_id.toString()} successfully deleted`})
   } catch (error) {
     res.status(500).json({message:error})
   }
